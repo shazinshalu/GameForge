@@ -1,0 +1,148 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>GameForge Products</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(-45deg, #0f172a, #020617, #111827, #020617);
+            background-size: 400% 400%;
+            animation: bgMove 10s ease infinite;
+        }
+
+        @keyframes bgMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .gaming-font {
+            font-family: 'Orbitron', sans-serif;
+        }
+    </style>
+
+    <script>
+        function showCart(productId) {
+            document.getElementById('cart-section-' + productId).classList.toggle('hidden');
+        }
+
+        function showWishlist(productId) {
+            document.getElementById('wishlist-section-' + productId).classList.toggle('hidden');
+        }
+    </script>
+</head>
+
+<body class="text-white min-h-screen">
+
+<!-- 🔥 NAVBAR -->
+<div class="bg-black/60 backdrop-blur-lg border-b border-gray-700 px-6 py-4 flex justify-between items-center">
+
+    <!-- Logo -->
+    <div class="flex items-center gap-3">
+        <img src="{% static 'img/gameforge-logo.png' %}" class="h-12 w-auto" alt="GameForge Logo">    
+    </div>
+
+    <!-- Links -->
+    <div class="flex gap-6 text-sm">
+        <a href="{% url 'index' %}" class="hover:text-cyan-400">Home</a>
+        <a href="{% url 'about' %}" class="hover:text-cyan-400">About</a>
+        <a href="{% url 'profile' %}" class="hover:text-cyan-400">Profile</a>
+    </div>
+
+</div>
+
+<!-- TITLE -->
+<h1 class="text-4xl font-bold text-center mt-10 mb-10 gaming-font bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+    🎮 Explore Gaming Products
+    <span class="gaming-font text-xl text-cyan-400">GameForge</span>
+</h1>
+
+<!-- PRODUCTS GRID -->
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 px-6">
+
+{% for product in p %}
+<div class="bg-white/5 backdrop-blur-xl border border-gray-700 rounded-2xl shadow-lg hover:shadow-cyan-500/30 transition duration-300 overflow-hidden group">
+
+    <!-- IMAGE -->
+    <div class="relative">
+        <img src="{{ product.image.url }}" class="w-full h-52 object-cover group-hover:scale-110 transition duration-300">
+
+        <!-- CATEGORY -->
+        <span class="absolute top-3 left-3 bg-cyan-500 text-black text-xs px-3 py-1 rounded-full">
+            {{ product.category }}
+        </span>
+
+        <!-- HOVER ACTION -->
+        <div class="absolute inset-0 bg-black/60 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition">
+
+            <button onclick="showCart('{{ product.id }}')"
+                class="bg-cyan-400 text-black px-4 py-1 rounded-lg text-sm hover:bg-cyan-300">
+                Add
+            </button>
+
+            <button onclick="showWishlist('{{ product.id }}')"
+                class="bg-pink-500 text-white px-4 py-1 rounded-lg text-sm hover:bg-pink-600">
+                ♥
+            </button>
+        </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="p-4">
+
+        <h2 class="text-lg font-semibold text-white mb-1">
+            {{ product.name }}
+        </h2>
+
+        <p class="text-gray-400 text-sm mb-2 line-clamp-2">
+            {{ product.description }}
+        </p>
+
+        <div class="flex justify-between items-center mb-3">
+            <p class="text-cyan-400 font-bold text-lg">₹ {{ product.price }}</p>
+            <p class="text-xs text-gray-400">Stock: {{ product.quantity }}</p>
+        </div>
+
+        <!-- CART -->
+        <div id="cart-section-{{ product.id }}" class="hidden mt-3">
+            <form method="POST" action="{% url 'add_to_cart' product.id %}">
+                {% csrf_token %}
+                <input type="number" name="quantity" value="1" min="1"
+                    class="w-full bg-black/40 border border-gray-600 rounded-lg px-3 py-2 mb-2 text-white focus:ring-2 focus:ring-cyan-400">
+
+                <button type="submit"
+                    class="w-full bg-cyan-500 text-black py-2 rounded-lg hover:bg-cyan-400 transition">
+                    Confirm
+                </button>
+            </form>
+        </div>
+
+        <!-- WISHLIST -->
+        <div id="wishlist-section-{{ product.id }}" class="hidden mt-3">
+            <form method="POST" action="{% url 'add_to_wishlist' product.id %}">
+                {% csrf_token %}
+                <button type="submit"
+                    class="w-full bg-pink-600 text-white py-2 rounded-lg hover:bg-pink-700 transition">
+                    Add to Wishlist
+                </button>
+            </form>
+        </div>
+
+    </div>
+
+</div>
+{% endfor %}
+
+</div>
+
+</body>
+</html>

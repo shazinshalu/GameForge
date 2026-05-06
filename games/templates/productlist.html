@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Product List</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gradient-to-br from-gray-100 to-gray-200 min-h-screen p-6">
+
+<h1 class="text-4xl font-bold text-center mb-10 text-gray-800">🛍️ Product List</h1>
+
+<!-- ✅ GLOBAL CSRF TOKEN -->
+<input type="hidden" id="csrf_token" value="{{ csrf_token }}">
+
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+
+{% for product in p %}
+<div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition duration-300 overflow-hidden">
+
+    <!-- VIEW -->
+    <div id="view{{ product.id }}">
+        <div class="relative">
+            <img src="{{ product.image.url }}" class="w-full h-52 object-cover">
+
+            <span class="absolute top-2 right-2 bg-blue-500 text-white text-xs px-3 py-1 rounded-full">
+                {{ product.category }}
+            </span>
+        </div>
+
+        <div class="p-4">
+            <h2 class="text-lg font-semibold text-gray-800 mb-1">{{ product.name }}</h2>
+
+            <p class="text-gray-500 text-sm mb-2">
+                {{ product.description }}
+            </p>
+
+            <div class="flex justify-between items-center mb-2">
+                <p class="text-green-600 font-bold text-lg">₹ {{ product.price }}</p>
+                <p class="text-sm text-gray-600">Stock: {{ product.quantity }}</p>
+            </div>
+
+            <div class="flex gap-2 mt-4">
+
+                <button onclick="toggleEdit({{ product.id }})"
+                    class="flex-1 bg-yellow-400 text-white py-1 rounded-lg">
+                    ✏️ Edit
+                </button>
+
+                <a href="{% url 'delete_product' product.id %}"
+                   class="flex-1 bg-red-500 text-white text-center py-1 rounded-lg">
+                   🗑 Delete
+                </a>
+
+                <a href="{% url 'add_to_cart' product.id %}"
+                   class="flex-1 bg-green-500 text-white text-center py-1 rounded-lg">
+                   🛒 Add
+                </a>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- EDIT -->
+    <div id="edit{{ product.id }}" class="hidden p-4">
+
+        <form id="form{{ product.id }}" enctype="multipart/form-data">
+
+            <input type="text" name="name" value="{{ product.name }}" class="w-full mb-2 p-2 border rounded">
+
+            <textarea name="description" class="w-full mb-2 p-2 border rounded">{{ product.description }}</textarea>
+
+            <input type="number" name="price" value="{{ product.price }}" class="w-full mb-2 p-2 border rounded">
+
+            <input type="number" name="quantity" value="{{ product.quantity }}" class="w-full mb-2 p-2 border rounded">
+
+            <input type="text" name="category" value="{{ product.category }}" class="w-full mb-2 p-2 border rounded">
+
+            <input type="file" name="image" class="mb-3">
+
+            <div class="flex gap-2">
+                <button type="button" onclick="saveEdit({{ product.id }})"
+                    class="flex-1 bg-blue-500 text-white py-2 rounded">
+                    Save
+                </button>
+
+                <button type="button" onclick="toggleEdit({{ product.id }})"
+                    class="flex-1 bg-gray-400 text-white py-2 rounded">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+
+</div>
+{% endfor %}
+
+</div>
+
+<script>
+function toggleEdit(id){
+    document.getElementById('view'+id).classList.toggle('hidden');
+    document.getElementById('edit'+id).classList.toggle('hidden');
+}
+
+// ✅ GET CSRF
+function getCSRFToken(){
+    return document.getElementById('csrf_token').value;
+}
+
+// ✅ SAVE FUNCTION (FIXED)
+function saveEdit(id){
+    const form = document.getElementById('form'+id);
+    const formData = new FormData(form);
+
+    console.log("Sending request for ID:", id);
+
+    fetch("/edit_product/" + id + "/", {
+        method: "POST",
+        body: formData,
+        headers: {
+            "X-CSRFToken": getCSRFToken()
+        }
+    })
+    .then(response => {
+        console.log("Response:", response);
+        return response.json();
+    })
+    .then(data => {
+        console.log("Data:", data);
+
+        if(data.success){
+            alert("✅ Updated successfully");
+            location.reload();
+        } else {
+            alert("❌ Update failed");
+        }
+    })
+    .catch(error => {
+        console.log("ERROR:", error);
+        alert("❌ Error occurred");
+    });
+}
+</script>
+
+</body>
+</html>

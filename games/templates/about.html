@@ -1,0 +1,115 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>About Us</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .gaming-font {
+            font-family: 'Orbitron', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-black via-gray-900 to-gray-800 text-white min-h-screen">
+
+<!-- Navbar -->
+<div class="bg-black/60 backdrop-blur-lg border-b border-gray-700 p-4 flex justify-between items-center">
+    <h1 class="gaming-font text-xl text-cyan-400">⚡ GameForge</h1>
+
+    <div class="flex gap-6">
+        <a href="{% url 'index' %}" class="hover:text-cyan-400 transition">Home</a>
+        <a href="{% url 'about' %}" class="text-cyan-400">About</a>
+    </div>
+</div>
+
+<!-- Hero Section -->
+<div class="text-center mt-16 px-4">
+    <h2 class="text-4xl md:text-5xl font-bold gaming-font bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+        Powering Your Gaming Dreams
+    </h2>
+
+    <p class="mt-4 text-gray-300 max-w-2xl mx-auto">
+        We build next-generation gaming PCs with cutting-edge technology,
+        designed for ultimate performance, speed, and style.
+    </p>
+</div>
+
+<!-- About Content -->
+<div class="max-w-6xl mx-auto mt-16 px-6 grid md:grid-cols-2 gap-10">
+
+    <!-- Company Details -->
+    <div class="bg-white/5 backdrop-blur-xl border border-gray-700 p-6 rounded-2xl shadow-lg">
+        <h3 class="text-2xl font-semibold text-cyan-400 mb-3">🏢 Company</h3>
+
+        <p class="text-gray-300">
+            GameForge is a premium gaming PC brand delivering high-performance rigs,
+            custom builds, and gaming accessories tailored for enthusiasts and professionals.
+        </p>
+
+        <p class="mt-3 text-gray-400">
+            Founded with a passion for gaming, we focus on quality, performance,
+            and futuristic design.
+        </p>
+    </div>
+
+    <!-- Services -->
+    <div class="bg-white/5 backdrop-blur-xl border border-gray-700 p-6 rounded-2xl shadow-lg">
+        <h3 class="text-2xl font-semibold text-purple-400 mb-3">🛠️ Services</h3>
+
+        <ul class="space-y-2 text-gray-300">
+            <li>✔ Custom Gaming PC Builds</li>
+            <li>✔ High-End Components</li>
+            <li>✔ Upgrade & Repair Services</li>
+            <li>✔ RGB Setup & Optimization</li>
+        </ul>
+    </div>
+
+</div>
+
+<!-- Features -->
+<div class="max-w-6xl mx-auto mt-16 px-6">
+    <h3 class="text-3xl font-bold text-center gaming-font mb-8">🚀 Website Features</h3>
+
+    <div class="grid md:grid-cols-3 gap-6">
+
+        <div class="bg-gradient-to-br from-cyan-500/10 to-purple-500/10 border border-gray-700 p-6 rounded-2xl text-center hover:scale-105 transition">
+            ⚡ Ultra Fast Performance
+        </div>
+
+        <div class="bg-gradient-to-br from-cyan-500/10 to-purple-500/10 border border-gray-700 p-6 rounded-2xl text-center hover:scale-105 transition">
+            🎮 Gaming Optimized
+        </div>
+
+        <div class="bg-gradient-to-br from-cyan-500/10 to-purple-500/10 border border-gray-700 p-6 rounded-2xl text-center hover:scale-105 transition">
+            🔒 Secure & Reliable
+        </div>
+
+    </div>
+</div>
+
+<!-- Contact Section -->
+<div class="max-w-4xl mx-auto mt-16 mb-16 px-6 bg-white/5 backdrop-blur-xl border border-gray-700 p-8 rounded-2xl shadow-lg">
+
+    <h3 class="text-2xl font-semibold text-center text-cyan-400 mb-4">📞 Contact Us</h3>
+
+    <div class="text-center text-gray-300 space-y-2">
+        <p>Email: gameforgesupport@gmail.com</p>
+        <p>Phone: +91 98765 43210</p>
+        <p>Location: Kerala, India</p>
+    </div>
+
+</div>
+
+</body>
+</html>
