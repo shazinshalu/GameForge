@@ -225,6 +225,7 @@ def feedback(request):
         )
         return HttpResponse("<script>alert('Feedback submitted successfully!'); window.location.href='/index/';</script>")
     return render(request, 'feedback.html', {'e': user}) 
+    
 def about(request):
     return render(request, 'about.html')
 def faq(request):
