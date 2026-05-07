@@ -74,7 +74,7 @@
 
     <!-- IMAGE -->
     <div class="relative">
-        <img src="{{ product.image.url }}" class="w-full h-52 object-cover group-hover:scale-110 transition duration-300">
+        <img src="{{ products.image.url }}" class="w-full h-52 object-cover group-hover:scale-110 transition duration-300">
 
         <!-- CATEGORY -->
         <span class="absolute top-3 left-3 bg-cyan-500 text-black text-xs px-3 py-1 rounded-full">
@@ -114,7 +114,7 @@
 
         <!-- CART -->
         <div id="cart-section-{{ product.id }}" class="hidden mt-3">
-            <form method="POST" action="{% url 'add_to_cart' product.id %}">
+            <form method="POST" action="{% url 'add_to_cart' products.id %}">
                 {% csrf_token %}
                 <input type="number" name="quantity" value="1" min="1"
                     class="w-full bg-black/40 border border-gray-600 rounded-lg px-3 py-2 mb-2 text-white focus:ring-2 focus:ring-cyan-400">
@@ -128,7 +128,7 @@
 
         <!-- WISHLIST -->
         <div id="wishlist-section-{{ product.id }}" class="hidden mt-3">
-            <form method="POST" action="{% url 'add_to_wishlist' product.id %}">
+            <form method="POST" action="{% url 'add_to_wishlist' products.id %}">
                 {% csrf_token %}
                 <button type="submit"
                     class="w-full bg-pink-600 text-white py-2 rounded-lg hover:bg-pink-700 transition">
