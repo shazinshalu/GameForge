@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from .models import User,products
-from django.contrib.auth import authenticate, login
+
 from django.contrib import messages
 def index(request):
     return render(request, 'index.html')
@@ -225,7 +225,7 @@ def feedback(request):
         )
         return HttpResponse("<script>alert('Feedback submitted successfully!'); window.location.href='/index/';</script>")
     return render(request, 'feedback.html', {'e': user}) 
-    
+
 def about(request):
     return render(request, 'about.html')
 def faq(request):
