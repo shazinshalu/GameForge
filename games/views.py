@@ -167,7 +167,8 @@ def delete_cart(request, id):
         cart_item = get_object_or_404(Cart, id=id) 
         cart_item.delete() 
         return redirect('cart') 
-    return render(request, 'cart.html') 
+    return render(request, 'cart.html')
+    
 def userproduct_list(request):
     p = products.objects.all()
     return render(request, 'userproductlist.html', {'p': p})
