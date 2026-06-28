@@ -18,6 +18,15 @@ class products(models.Model):
     created_at = models.DateTimeField (auto_now_add=True)
     def __str__(self):
         return f"{self.name}"
+
+    @property
+    def has_image(self):
+        if not self.image:
+            return False
+        try:
+            return self.image.storage.exists(self.image.name)
+        except Exception:
+            return False
 #create a product cart
 class Cart(models.Model): 
     user=models.ForeignKey(User,on_delete=models.CASCADE) 

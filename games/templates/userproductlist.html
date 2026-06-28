@@ -107,12 +107,12 @@
             <!-- IMAGE -->
             <div class="relative overflow-hidden">
 
-                {% if product.image %}
+                {% if product.has_image %}
                     <img src="{{ product.image.url }}"
                          alt="{{ product.name }}"
                          class="w-full h-56 object-cover group-hover:scale-110 transition duration-300">
                 {% else %}
-                    <img src="{% static 'img/no-image.png' %}"
+                    <img src="{% static 'img/product01.png' %}"
                          alt="No Image"
                          class="w-full h-56 object-cover">
                 {% endif %}

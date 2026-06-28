@@ -1,12 +1,8 @@
-from django.shortcuts import render
-from .models import *
-from django.shortcuts import render,redirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
-from .models import User,products
+from .models import Cart, Feedback, User, products, wishlist
 
-from django.contrib import messages
 def index(request):
     return render(request, 'index.html')
 def register(request):
@@ -50,6 +46,9 @@ def profile(request):
         return redirect('login')
 def editprofile(request):
     email = request.session.get('email') 
+    if not email:
+        messages.warning(request, "You need to log in to update your profile.")
+        return redirect('login')
     user = User.objects.get(email=email)  # Get the User object
     if request.method == 'POST':
         # Get the form data
@@ -78,6 +77,9 @@ def product(request):
         quantity = request.POST.get('quantity')
         category = request.POST.get('category')
         image = request.FILES.get('image')
+        if not image:
+            messages.error(request, 'Please upload a product image.')
+            return render(request, 'products.html')
         products.objects.create(name=name,price=price,quantity=quantity,category=category,description=description,image=image)
         messages.success(request, 'registration successfull')
         return redirect ('index')
@@ -117,57 +119,52 @@ def delete_product(request,id):
 def add_to_cart(request, id): 
     product = get_object_or_404(products, id=id) 
     email = request.session.get('email') 
-    if email: 
-        user = get_object_or_404(User, email=email) 
-        cart_item, created = Cart.objects.get_or_create( 
-            user=user, 
-            product=product, 
-            defaults={'quantity': 1} 
-        ) 
-        if not created: 
-            cart_item.quantity += 1 
-            cart_item.total_price = cart_item.quantity * product.price 
-            cart_item.save() 
-        return redirect('cart')  # Replace 'view_cart' with your cart view name 
-    else: 
-        return JsonResponse({'authentication failed': 'User email not found in session. Please login first.'}, status=400)
-def add_to_cart(request, id): 
-    product = get_object_or_404(products, id=id) 
-    email = request.session.get('email') 
-    if email: 
-        user = get_object_or_404(User, email=email) 
-        cart_item, created = Cart.objects.get_or_create( 
-            user=user, 
-            product=product, 
-            defaults={'quantity': 1} 
-        ) 
-        if not created: 
-            cart_item.quantity += 1 
-            cart_item.total_price = cart_item.quantity * product.price 
-            cart_item.save() 
-        return redirect('cart')  # Replace 'view_cart' with your cart view name 
-    else: 
-        return JsonResponse({'authentication failed': 'User email not found in session. Please login first.'}, status=400) 
+    if not email:
+        messages.warning(request, 'Please login first.')
+        return redirect('login')
+
+    user = get_object_or_404(User, email=email)
+    try:
+        quantity = int(request.POST.get('quantity', 1))
+    except (TypeError, ValueError):
+        quantity = 1
+    quantity = max(quantity, 1)
+
+    cart_item, created = Cart.objects.get_or_create(
+        user=user,
+        product=product,
+        defaults={'quantity': quantity}
+    )
+    if not created:
+        cart_item.quantity += quantity
+        cart_item.save()
+    return redirect('cart')
 
 def cart(request): 
      email = request.session.get('email') 
-     if email: 
-        user = get_object_or_404( User,email=email) 
-        cart_items = Cart.objects.filter(user=user)
-        for item in cart_items: 
-            item.total_price = item.product.price * item.quantity 
-     
-        total_price = sum(item.total_price for item in cart_items) 
-     
-        return render(request, 'cart.html', {'cart_items': cart_items, 'total_price': total_price}) 
-     else: 
-        return render(request, 'cart.html', {'AUTHENTICATION FAILED': 'User email not found in session. Please login first.'}) 
+     if not email:
+        messages.warning(request, 'Please login first.')
+        return redirect('login')
+
+     user = get_object_or_404(User, email=email)
+     cart_items = Cart.objects.filter(user=user).select_related('product')
+     for item in cart_items:
+        item.total_price = item.product.price * item.quantity
+
+     total_price = sum(item.total_price for item in cart_items)
+     return render(request, 'cart.html', {'cart_items': cart_items, 'total_price': total_price})
 def delete_cart(request, id):
+    email = request.session.get('email')
+    if not email:
+        messages.warning(request, 'Please login first.')
+        return redirect('login')
+
     if request.method == "POST":
-        cart_item = get_object_or_404(Cart, id=id) 
-        cart_item.delete() 
-        return redirect('cart') 
-    return render(request, 'cart.html')
+        user = get_object_or_404(User, email=email)
+        cart_item = get_object_or_404(Cart, id=id, user=user)
+        cart_item.delete()
+        return redirect('cart')
+    return redirect('cart')
     
 def userproduct_list(request):
     p = products.objects.all()
@@ -176,30 +173,35 @@ def add_to_wishlist(request, id):
     product = get_object_or_404(products, id=id)
     email = request.session.get('email')
 
-    if email:
-        user = get_object_or_404(User, email=email)
+    if not email:
+        messages.warning(request, 'Please login first.')
+        return redirect('login')
 
-        wishlist.objects.get_or_create(
-            user=user,
-            product=product,
-        )
+    user = get_object_or_404(User, email=email)
+    wishlist.objects.get_or_create(user=user, product=product)
+    return redirect('viewwishlist')
 
-        return redirect('viewwishlist')
-
-    else:
-        return JsonResponse(
-            {'error': 'User not logged in'},
-            status=400
-        )
 def viewwishlist(request): 
      email = request.session.get('email') 
-     if email: 
-        user = get_object_or_404( User,email=email) 
-        wishlist_items = wishlist.objects.filter(user=user)
-     
-        return render(request, 'wishlist.html', {'wishlist_items': wishlist_items}) 
-     else: 
-        return render(request, 'wishlist.html', {'AUTHENTICATION FAILED': 'User email not found in session. Please login first.'})
+     if not email:
+        messages.warning(request, 'Please login first.')
+        return redirect('login')
+
+     user = get_object_or_404(User, email=email)
+     wishlist_items = wishlist.objects.filter(user=user).select_related('product')
+     total_price = sum(item.product.price for item in wishlist_items)
+     return render(request, 'wishlist.html', {'wishlist_items': wishlist_items, 'total_price': total_price})
+
+def delete_wishlist(request, id):
+    email = request.session.get('email')
+    if not email:
+        messages.warning(request, 'Please login first.')
+        return redirect('login')
+
+    user = get_object_or_404(User, email=email)
+    wishlist_item = get_object_or_404(wishlist, id=id, user=user)
+    wishlist_item.delete()
+    return redirect('viewwishlist')
 
 def feedback(request):
     email = request.session.get('email')

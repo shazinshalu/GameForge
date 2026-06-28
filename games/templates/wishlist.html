@@ -21,8 +21,15 @@
 
             <!-- IMAGE -->
             <div class="relative">
+                {% if item.product.has_image %}
                 <img src="{{ item.product.image.url }}"
+                     alt="{{ item.product.name }}"
                      class="w-full h-52 object-cover group-hover:scale-105 transition duration-300">
+                {% else %}
+                <img src="/static/img/product01.png"
+                     alt="No product image"
+                     class="w-full h-52 object-cover group-hover:scale-105 transition duration-300">
+                {% endif %}
             </div>
 
             <!-- CONTENT -->
@@ -44,6 +51,14 @@
                         <button type="submit"
                             class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
                             🛒 Add to Cart
+                        </button>
+                    </form>
+
+                    <form method="POST" action="{% url 'delete_wishlist' item.id %}" class="w-full">
+                        {% csrf_token %}
+                        <button type="submit"
+                            class="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 transition">
+                            Remove
                         </button>
                     </form>
 

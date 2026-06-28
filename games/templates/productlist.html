@@ -21,7 +21,11 @@
     <!-- VIEW -->
     <div id="view{{ product.id }}">
         <div class="relative">
-            <img src="{{ product.image.url }}" class="w-full h-52 object-cover">
+            {% if product.has_image %}
+            <img src="{{ product.image.url }}" class="w-full h-52 object-cover" alt="{{ product.name }}">
+            {% else %}
+            <img src="/static/img/product01.png" class="w-full h-52 object-cover" alt="No product image">
+            {% endif %}
 
             <span class="absolute top-2 right-2 bg-blue-500 text-white text-xs px-3 py-1 rounded-full">
                 {{ product.category }}

@@ -22,8 +22,15 @@
             {% for item in cart_items %}
             <div class="bg-white rounded-2xl shadow-md hover:shadow-lg transition p-4 flex gap-4 items-center">
 
+                {% if item.product.has_image %}
                 <img src="{{ item.product.image.url }}"
+                     alt="{{ item.product.name }}"
                      class="w-24 h-24 object-cover rounded-lg">
+                {% else %}
+                <img src="/static/img/product01.png"
+                     alt="No product image"
+                     class="w-24 h-24 object-cover rounded-lg">
+                {% endif %}
 
                 <div class="flex-1">
                     <h2 class="text-lg font-semibold text-gray-800">
