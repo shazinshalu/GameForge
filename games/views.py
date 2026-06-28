@@ -12,13 +12,23 @@ def register(request):
         password = request.POST.get('password')
         address = request.POST.get('address')
         phone = request.POST.get('phone')
+
         if User.objects.filter(email=email).exists():
-           messages.error(request, 'Email already registered.')
+            messages.error(request, 'Email already registered.')
         else:
-            User.objects.create(name=name, email=email, password=password, address=address, phone=phone)
-            messages.success(request, 'registration successfull')
-            return redirect ('index')
-    return render(request,'register.html')
+            user = User(
+                name=name,
+                email=email,
+                address=address,
+                phone=phone
+            )
+            user.set_password(password)  # 🔥 IMPORTANT LINE
+            user.save()
+
+            messages.success(request, 'Registration successful')
+            return redirect('index')
+
+    return render(request, 'register.html')
 def login(request):
     if request.method =='POST':
         email = request.POST.get('email')
