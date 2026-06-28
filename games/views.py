@@ -16,30 +16,35 @@ def register(request):
         if User.objects.filter(email=email).exists():
             messages.error(request, 'Email already registered.')
         else:
-            user = User(
+            User.objects.create(
                 name=name,
                 email=email,
+                password=password,  # ✅ direct save
                 address=address,
                 phone=phone
             )
-            user.set_password(password)  # 🔥 IMPORTANT LINE
-            user.save()
 
             messages.success(request, 'Registration successful')
             return redirect('index')
 
     return render(request, 'register.html')
 def login(request):
-    if request.method =='POST':
+    if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
+
         try:
-            user = User.objects.get(email=email, password=password)
-            request.session['email'] = user.email
-            messages.success(request, 'Login successful!')
-            return redirect('index')
+            user = User.objects.get(email=email)
+
+            if user.password == password:  # ✅ manual check
+                request.session['email'] = user.email
+                return redirect('index')
+            else:
+                return render(request, 'login.html', {'error': 'Invalid password'})
+
         except User.DoesNotExist:
-            return render(request, 'login.html', {'error':'Invalid email or password.'})
+            return render(request, 'login.html', {'error': 'User not found'})
+
     return render(request, 'login.html')
 def profile(request):
     email = request.session.get('email')
